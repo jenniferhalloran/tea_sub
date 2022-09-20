@@ -20,10 +20,31 @@ RSpec.describe 'Create Subscription', type: :request do
 
       post '/api/v1/subscriptions', headers: headers, params: JSON.generate(params)
 
-      result = JSON.parse(response.body, symbolize_names: true)[:data]
+      results = JSON.parse(response.body, symbolize_names: true)[:data]
+      expect(response.status).to eq(201)
+      expect(results).to be_a(Hash)
+      expect(results[:type]).to eq('subscription')
+      expect(results[:attributes]).to be_a Hash 
+      expect(results[:attributes][:customer_id]).to eq(customer.id)
+      expect(results[:attributes][:tea_id]).to eq(tea.id)
+      expect(results[:attributes][:title]).to eq("Tier 1")
+      expect(results[:attributes][:price]).to eq(4.99)
+      expect(results[:attributes][:frequency]).to eq("weekly")
+    end 
+  end
+  context 'sad path' do
+    it 'returns an error if a parameter is missing' do
+      params = {
+        "tea_id": tea.id,
+        "subscription_type": 0
+      }
 
-      expect(result).to be_a(Hash)
-      expect(result[:type]).to eq('subscription')
+      post '/api/v1/subscriptions', headers: headers, params: JSON.generate(params)
+
+      results = JSON.parse(response.body, symbolize_names: true)[:data]
+      expect(response.status).to eq(400)
+      expect(results).to be_a(Hash)
+      expect(results[:error]).to eq("Customer must exist and Customer can't be blank")
     end 
   end
 end
