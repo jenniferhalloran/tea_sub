@@ -1,6 +1,6 @@
 class Api::V1::SubscriptionsController < ApplicationController 
-  include ErrorHelper
   before_action :subscription_type_update, only: [:update, :create]
+
 
   def create 
     begin
@@ -34,10 +34,5 @@ class Api::V1::SubscriptionsController < ApplicationController
       params[:frequency] = params[:subscription_type]
       params[:price] = params[:subscription_type]
     end
-  end
-
-  def validate_ids 
-    Customer.find(params[:customer_id]) if params[:customer_id]
-    Tea.find(params[:tea_id]) if params[:tea_id]
   end
 end
