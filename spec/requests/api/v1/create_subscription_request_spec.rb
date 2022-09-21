@@ -30,6 +30,7 @@ RSpec.describe 'Create Subscription', type: :request do
       expect(results[:attributes][:title]).to eq("Tier 1")
       expect(results[:attributes][:price]).to eq(4.99)
       expect(results[:attributes][:frequency]).to eq("weekly")
+      expect(results[:attributes][:active]).to eq(true)
     end 
   end
   context 'sad path' do
