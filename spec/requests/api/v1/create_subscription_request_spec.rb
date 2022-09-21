@@ -45,7 +45,7 @@ RSpec.describe 'Create Subscription', type: :request do
       results = JSON.parse(response.body, symbolize_names: true)[:data]
       expect(response.status).to eq(400)
       expect(results).to be_a(Hash)
-      expect(results[:error]).to eq("Customer must exist and Customer can't be blank")
+      expect(results[:error]).to eq("Validation failed: Customer must exist, Customer can't be blank")
     end 
     it 'returns an error if tea id does not exist' do
       params = {
@@ -59,7 +59,7 @@ RSpec.describe 'Create Subscription', type: :request do
       results = JSON.parse(response.body, symbolize_names: true)[:data]
       expect(response.status).to eq(400)
       expect(results).to be_a(Hash)
-      expect(results[:error]).to eq("Tea must exist")
+      expect(results[:error]).to eq("Validation failed: Tea must exist")
     end
     it 'returns an error if customer id does not exist' do
       params = {
@@ -73,7 +73,7 @@ RSpec.describe 'Create Subscription', type: :request do
       results = JSON.parse(response.body, symbolize_names: true)[:data]
       expect(response.status).to eq(400)
       expect(results).to be_a(Hash)
-      expect(results[:error]).to eq("Customer must exist")
+      expect(results[:error]).to eq("Validation failed: Customer must exist")
     end
     it 'returns an error if an invalid subscription is entered' do
       params = {

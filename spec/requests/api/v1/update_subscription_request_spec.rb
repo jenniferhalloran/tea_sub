@@ -53,18 +53,43 @@ RSpec.describe 'Create Subscription', type: :request do
     end 
   end
   context 'sad path' do
-    # it 'returns an error if parameter is missing' do
-    #   params = {
-    #     "tea_id": tea.id,
-    #     "subscription_type": 0
-    #   }
+    it 'returns an error if tea id does not exist' do
+      invalid_id = tea.id - 1
+      params = {
+        "tea_id": invalid_id,
+      }
 
-    #   post '/api/v1/subscriptions', headers: headers, params: JSON.generate(params)
+      patch "/api/v1/subscriptions/#{subscription.id}", headers: headers, params: JSON.generate(params)
 
-    #   results = JSON.parse(response.body, symbolize_names: true)[:data]
-    #   expect(response.status).to eq(400)
-    #   expect(results).to be_a(Hash)
-    #   expect(results[:error]).to eq("Customer must exist and Customer can't be blank")
-    # end 
+      results = JSON.parse(response.body, symbolize_names: true)[:data]
+      expect(response.status).to eq(400)
+      expect(results).to be_a(Hash)
+      expect(results[:error]).to eq("Couldn't find Tea with 'id'=#{invalid_id}")
+    end
+    it 'returns an error if customer id does not exist' do
+      invalid_id = customer.id - 1
+      params = {
+        "customer_id": invalid_id,
+      }
+
+      patch "/api/v1/subscriptions/#{subscription.id}", headers: headers, params: JSON.generate(params)
+
+      results = JSON.parse(response.body, symbolize_names: true)[:data]
+      expect(response.status).to eq(400)
+      expect(results).to be_a(Hash)
+      expect(results[:error]).to eq("Couldn't find Customer with 'id'=#{invalid_id}")
+    end
+    it 'returns an error if an invalid subscription is entered' do
+      params = {
+        "subscription_type": 4
+      }
+
+      patch "/api/v1/subscriptions/#{subscription.id}", headers: headers, params: JSON.generate(params)
+
+      results = JSON.parse(response.body, symbolize_names: true)[:data]
+      expect(response.status).to eq(400)
+      expect(results).to be_a(Hash)
+      expect(results[:error]).to eq("'4' is not a valid title")
+    end
   end
 end

@@ -6,17 +6,20 @@ class Api::V1::SubscriptionsController < ApplicationController
     begin
       sub = Subscription.create!(subscription_params)
       render json: SubscriptionSerializer.new(sub), status: 201
-    rescue ActiveRecord::RecordInvalid => e
-      record_error(e)
-    rescue ArgumentError => e
-      argument_error(e)
+    rescue ActiveRecord::RecordInvalid, ArgumentError => e
+      serialize_error(e)
     end
   end
 
   def update 
-    sub = Subscription.find(params[:id])
-    sub.update(subscription_params)
-    render json: SubscriptionSerializer.new(sub), status: 200
+    begin 
+      sub = Subscription.find(params[:id])
+      validate_ids
+      sub.update(subscription_params)
+      render json: SubscriptionSerializer.new(sub), status: 200
+    rescue ActiveRecord::RecordNotFound, ArgumentError => e
+      serialize_error(e)
+    end
   end
 
 
@@ -31,5 +34,10 @@ class Api::V1::SubscriptionsController < ApplicationController
       params[:frequency] = params[:subscription_type]
       params[:price] = params[:subscription_type]
     end
+  end
+
+  def validate_ids 
+    Customer.find(params[:customer_id]) if params[:customer_id]
+    Tea.find(params[:tea_id]) if params[:tea_id]
   end
 end
