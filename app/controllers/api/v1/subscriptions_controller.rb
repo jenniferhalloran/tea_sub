@@ -1,10 +1,6 @@
 class Api::V1::SubscriptionsController < ApplicationController 
   before_action :subscription_type_update, only: [:update, :create]
 
-  def index 
-    customer = Customer.find(params[:id])
-    render json: UserSubscriptionsSerializer.new(customer), status: 200
-  end
 
   def create 
     begin

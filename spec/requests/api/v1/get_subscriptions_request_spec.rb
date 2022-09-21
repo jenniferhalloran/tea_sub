@@ -35,4 +35,14 @@ RSpec.describe 'Create Subscription', type: :request do
       expect(results[:attributes][:subscriptions].count).to eq 2
     end
   end 
+  context 'sad path' do
+    it 'returns an error if the customer does not exist' do
+
+    get "/api/v1/customers/#{customer1.id - 1}/subscriptions", headers: headers
+
+      results = JSON.parse(response.body, symbolize_names: true)[:data]
+      expect(response.status).to eq(400)
+      expect(results).to be_a(Hash)
+    end
+  end 
 end
