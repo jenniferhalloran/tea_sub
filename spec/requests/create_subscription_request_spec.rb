@@ -33,7 +33,7 @@ RSpec.describe 'Create Subscription', type: :request do
     end 
   end
   context 'sad path' do
-    it 'returns an error if a parameter is missing' do
+    it 'returns an error if parameter is missing' do
       params = {
         "tea_id": tea.id,
         "subscription_type": 0
@@ -46,5 +46,47 @@ RSpec.describe 'Create Subscription', type: :request do
       expect(results).to be_a(Hash)
       expect(results[:error]).to eq("Customer must exist and Customer can't be blank")
     end 
+    it 'returns an error if tea id does not exist' do
+      params = {
+        "customer_id": customer.id,
+        "tea_id": (tea.id - 1),
+        "subscription_type": 0
+      }
+
+      post '/api/v1/subscriptions', headers: headers, params: JSON.generate(params)
+
+      results = JSON.parse(response.body, symbolize_names: true)[:data]
+      expect(response.status).to eq(400)
+      expect(results).to be_a(Hash)
+      expect(results[:error]).to eq("Tea must exist")
+    end
+    it 'returns an error if customer id does not exist' do
+      params = {
+        "customer_id": (customer.id - 1),
+        "tea_id": tea.id,
+        "subscription_type": 0
+      }
+
+      post '/api/v1/subscriptions', headers: headers, params: JSON.generate(params)
+
+      results = JSON.parse(response.body, symbolize_names: true)[:data]
+      expect(response.status).to eq(400)
+      expect(results).to be_a(Hash)
+      expect(results[:error]).to eq("Customer must exist")
+    end
+    it 'returns an error if an invalid subscription is entered' do
+      params = {
+        "customer_id": customer.id,
+        "tea_id": tea.id,
+        "subscription_type": 4
+      }
+
+      post '/api/v1/subscriptions', headers: headers, params: JSON.generate(params)
+
+      results = JSON.parse(response.body, symbolize_names: true)[:data]
+      expect(response.status).to eq(400)
+      expect(results).to be_a(Hash)
+      expect(results[:error]).to eq("'4' is not a valid title")
+    end
   end
 end
